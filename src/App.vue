@@ -15,7 +15,7 @@
       @deleted="filter"
     />
   </footer>
-  <p v-else>Add a weather card</p>
+  <p class="emptyWeather" v-else>--- Add a weather card ---</p>
   <TheModal
     @added="addNewCity"
   />
