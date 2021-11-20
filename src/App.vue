@@ -2,23 +2,25 @@
   <header>
     <p>World Weather</p>
   </header>
+  <Loader v-show="loading" />
+  <div v-show="!loading">
+    <main>
+      <CurrentWeather />
+    </main>
 
-  <main>
-    <CurrentWeather v-if="cityFound" />
-  </main>
-
-  <footer v-if="dataExtra">
-    <ExtraWeather
-      v-for="city in dataExtra"
-      :key="city.dbId"
-      :extra="city"
-      @deleted="filter"
+    <footer v-if="dataExtra">
+      <ExtraWeather
+        v-for="city in dataExtra"
+        :key="city.dbId"
+        :extra="city"
+        @deleted="filter"
+      />
+    </footer>
+    <p class="emptyWeather" v-else>--- Add a weather card ---</p>
+    <TheModal
+      @added="addNewCity"
     />
-  </footer>
-  <p class="emptyWeather" v-else>--- Add a weather card ---</p>
-  <TheModal
-    @added="addNewCity"
-  />
+  </div>
 </template>
 
 <script>
@@ -33,11 +35,7 @@ export default {
   setup () {
     const store = useStore()
     const dataExtra = ref([])
-    const cityFound = ref(false)
-
-    if (localStorage.getItem('currentCity') !== null) {
-      cityFound.value = true
-    }
+    const loading = ref(true)
 
     const filter = id => {
       dataExtra.value = dataExtra.value.filter(city => city.dbId !== id)
@@ -47,9 +45,11 @@ export default {
 
     onMounted(async () => {
       try {
-        await store.dispatch('currentCity/request')
-        await store.dispatch('load')
-        dataExtra.value.push(...store.getters.extraWeather)
+        setTimeout(async () => {
+          await store.dispatch('load')
+          dataExtra.value.push(...store.getters.extraWeather)
+          loading.value = false
+        }, 700)
       } catch (e) {}
     })
 
@@ -57,7 +57,7 @@ export default {
       dataExtra,
       filter,
       addNewCity,
-      cityFound
+      loading
     }
   },
   components: {

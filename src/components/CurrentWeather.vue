@@ -1,7 +1,7 @@
 <template>
-  <section>
+  <section v-if="cityFound">
     <p class="above-title">Watch weather in your current location</p>
-    <div class="card">
+    <div :class="['card', { 'card_loading': loading }]">
       <p class="card__title">{{ current.city }}, {{ current.country }}</p>
       <p class="card__subtitle">Your current location</p>
 
@@ -25,6 +25,7 @@
       <div class="control control_alone">
         <div class="control__reload" @click="reload">reload</div>
       </div>
+      <Loader v-if="loading"/>
     </div>
   </section>
 </template>
@@ -32,7 +33,7 @@
 <script>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useStore } from 'vuex'
-import { time } from '../use/time'
+import { time } from '../utils/time'
 
 export default {
   name: 'current',
@@ -40,30 +41,45 @@ export default {
     const store = useStore()
     const keyUpdate = ref(0)
     const timer = ref(null)
-    const current = ref(JSON.parse(localStorage.getItem('currentCity')))
+    const cityFound = ref(false)
+    const current = ref(null)
+    const loading = ref(false)
 
-    const reload = async () => {
+    const reload = () => {
       try {
-        await store.dispatch('currentCity/update')
-        current.value = JSON.parse(localStorage.getItem('currentCity'))
+        loading.value = true
+        setTimeout(async () => {
+          await store.dispatch('currentCity/update')
+          current.value = JSON.parse(localStorage.getItem('currentCity'))
+          loading.value = false
+        }, 500)
       } catch (e) {}
     }
 
-    onMounted(() => {
+    onMounted(async () => {
       timer.value = setInterval(() => {
         keyUpdate.value++
-      }, 60000)
+      }, 30000)
+
+      await store.dispatch('currentCity/request')
+
+      setTimeout(() => {
+        if (localStorage.getItem('currentCity') !== null) {
+          current.value = JSON.parse(localStorage.getItem('currentCity'))
+          cityFound.value = true
+        }
+      }, 400)
     })
 
-    onBeforeUnmount(() => {
-      clearInterval(timer.value)
-    })
+    onBeforeUnmount(() => clearInterval(timer.value))
 
     return {
       current,
       time,
       reload,
-      keyUpdate
+      keyUpdate,
+      cityFound,
+      loading
     }
   }
 }

@@ -12,6 +12,7 @@
         :class="['modal__search', {'modal__search_invalid': sError}]"
         v-model="search"
         @blur="sBlur"
+        @keypress.enter="onSubmit"
       />
       <small v-if="sError">{{ sError }}</small>
       <small v-if="myError">{{ myError }}</small>

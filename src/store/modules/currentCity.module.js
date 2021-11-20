@@ -4,43 +4,31 @@ import axios from 'axios'
 export default {
   namespaced: true,
   actions: {
-    request () {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(showPosition)
-      } else {
-        console.log('Geolocation is not supported')
-      }
+    async request () {
+      try {
+        const { data } = await axios.get(`https://ipinfo.io?token=${process.env.VUE_APP_TOKEN_IP}`)
 
-      async function showPosition (position) {
-        try {
-          const lat = position.coords.latitude
-          const lon = position.coords.longitude
+        const url = `https://api.openweathermap.org/data/2.5/weather?units=metric&lang=en&q=${data.city}&appid=${process.env.VUE_APP_WEATHER_KEY}`
+        const { data: dataGet } = await axios.get(url)
 
-          const url = `http://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&lang=en&appid=${process.env.VUE_APP_WEATHER_KEY}`
-          const { data } = await axios.get(url)
+        const currentCity = {
+          time: moment().format(),
+          city: dataGet.name,
+          country: dataGet.sys.country,
+          weather: dataGet.weather[0].main,
+          temp: Math.floor(dataGet.main.temp),
+          hum: dataGet.main.humidity
+        }
 
-          const url2 = `http://api.openweathermap.org/data/2.5/weather?units=metric&lang=en&q=${data.name}&appid=${process.env.VUE_APP_WEATHER_KEY}`
-          const { data: dataGet } = await axios.get(url2)
-
-          const currentCity = {
-            time: moment().format(),
-            city: dataGet.name,
-            country: dataGet.sys.country,
-            weather: dataGet.weather[0].main,
-            temp: Math.floor(dataGet.main.temp),
-            hum: dataGet.main.humidity
-          }
-
-          if (localStorage.getItem('currentCity') === null) {
-            localStorage.setItem('currentCity', JSON.stringify(currentCity))
-          }
-        } catch (e) {}
-      }
+        if (localStorage.getItem('currentCity') === null) {
+          localStorage.setItem('currentCity', JSON.stringify(currentCity))
+        }
+      } catch (e) {}
     },
     async update () {
       try {
         const city = JSON.parse(localStorage.getItem('currentCity')).city
-        const url = `http://api.openweathermap.org/data/2.5/weather?units=metric&lang=en&q=${city}&appid=${process.env.VUE_APP_WEATHER_KEY}`
+        const url = `https://api.openweathermap.org/data/2.5/weather?units=metric&lang=en&q=${city}&appid=${process.env.VUE_APP_WEATHER_KEY}`
         const { data } = await axios.get(url)
 
         const updateCity = {

@@ -1,8 +1,10 @@
 @import "./fonts.css";
 @import "variables";
-@import "cards.scss";
-@import "footer.scss";
-@import "modal.scss";
+@import "mixins";
+@import "./blocks/cards";
+@import "./blocks/footer.scss";
+@import "./blocks/modal.scss";
+@import "loader.scss";
 
 * { box-sizing: border-box }
 body, html {
@@ -15,38 +17,30 @@ body, html {
 header p {
   margin: 24px 0 0 0;
   text-align: center;
-  font-weight: 300;
-  font-size: 70px;
-  line-height: 80px;
+  @include font-style(300, 70px, 80px);
   color: $color-primary;
 
   @media screen and (max-width: 600px) {
-    & {
-      font-size: calc(100vw / (600 / 70));
-      line-height: calc(100vw / (600 / 80));
-    }
+    font-size: calc(100vw / (600 / 70));
+    line-height: calc(100vw / (600 / 80));
   }
 }
 
 .above-title {
   margin-top: 32px;
   text-align: center;
-  font-weight: 400;
-  font-size: 24px;
-  line-height: 24px;
+  @include font-style(400, 24px, 24px);
   color: $color-subtitle;
 
   @media screen and (max-width: 470px) {
-    & {
-      margin-top: calc(100vw / (470 / 32));
-      font-size: calc(100vw / (470 / 24));
-      line-height: calc(100vw / (470 / 24));
-    }
+    margin-top: calc(100vw / (470 / 32));
+    font-size: calc(100vw / (470 / 24));
+    line-height: calc(100vw / (470 / 24));
   }
 }
 
 .emptyWeather {
   text-align: center;
-  font-size: 24px;
+  @include font-style(400, 24px, 24px);
   color: $color-primary;
 }

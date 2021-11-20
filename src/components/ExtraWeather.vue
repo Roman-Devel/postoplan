@@ -1,6 +1,6 @@
 <template>
   <section>
-    <div class="card">
+    <div :class="['card', { 'card_loading': loading }]">
       <p class="card__title">{{ extra.city }}</p>
       <p class="card__subtitle">{{ extra.country }}</p>
 
@@ -25,6 +25,7 @@
         <div class="control__remove" @click="remove">remove</div>
         <div class="control__reload" @click="reload">reload</div>
       </div>
+      <Loader v-if="loading"/>
     </div>
   </section>
 </template>
@@ -32,7 +33,7 @@
 <script>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useStore } from 'vuex'
-import { time } from '../use/time'
+import { time } from '../utils/time'
 
 export default {
   name: 'extra',
@@ -47,30 +48,37 @@ export default {
     const store = useStore()
     const keyUpdate = ref(0)
     const timer = ref(null)
+    const loading = ref(false)
 
     onMounted(() => {
       timer.value = setInterval(() => {
         keyUpdate.value++
-      }, 60000)
+      }, 30000)
     })
 
-    onBeforeUnmount(() => {
-      clearInterval(timer.value)
-    })
+    onBeforeUnmount(() => clearInterval(timer.value))
 
-    const remove = async () => {
+    const remove = () => {
       try {
-        await store.dispatch('removeCity', props.extra.dbId)
-        emit('deleted', props.extra.dbId)
+        loading.value = true
+        setTimeout(async () => {
+          await store.dispatch('removeCity', props.extra.dbId)
+          emit('deleted', props.extra.dbId)
+          loading.value = false
+        }, 500)
       } catch (e) {}
     }
 
-    const reload = async () => {
+    const reload = () => {
       try {
-        await store.dispatch('updateWeather', {
-          id: props.extra.dbId,
-          city: props.extra.city
-        })
+        loading.value = true
+        setTimeout(async () => {
+          await store.dispatch('updateWeather', {
+            id: props.extra.dbId,
+            city: props.extra.city
+          })
+          loading.value = false
+        }, 500)
       } catch (e) {}
     }
 
@@ -78,7 +86,8 @@ export default {
       remove,
       reload,
       time,
-      keyUpdate
+      keyUpdate,
+      loading
     }
   }
 }

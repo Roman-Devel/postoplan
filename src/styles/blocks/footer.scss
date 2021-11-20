@@ -1,0 +1,15 @@
+footer {
+  margin: 0 auto;
+  padding-left: 40px;
+  @include flex(center, center);
+  flex-wrap: wrap;
+  width: 1520px;
+
+  section {
+    margin-right: 40px;
+  }
+
+  @media screen and (max-width: 1550px) {
+    width: calc(100vw / (1550 / 1520))
+  }
+}

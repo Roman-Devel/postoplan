@@ -34,7 +34,7 @@ export default createStore({
     },
     async addCity (_, { search }) {
       try {
-        const url = `http://api.openweathermap.org/data/2.5/weather?units=metric&lang=en&q=${search}&appid=${process.env.VUE_APP_WEATHER_KEY}`
+        const url = `https://api.openweathermap.org/data/2.5/weather?units=metric&lang=en&q=${search}&appid=${process.env.VUE_APP_WEATHER_KEY}`
         const { data: dataGet } = await axios.get(url)
 
         const newCity = {
@@ -57,11 +57,13 @@ export default createStore({
       try {
         await axios.delete(process.env.VUE_APP_DB_URL + `cities/${id}.json`)
         commit('filterExtra', id)
-      } catch (e) {}
+      } catch (e) {
+        console.log(e.message)
+      }
     },
     async updateWeather ({ commit }, { id, city }) {
       try {
-        const url = `http://api.openweathermap.org/data/2.5/weather?units=metric&lang=en&q=${city}&appid=${process.env.VUE_APP_WEATHER_KEY}`
+        const url = `https://api.openweathermap.org/data/2.5/weather?units=metric&lang=en&q=${city}&appid=${process.env.VUE_APP_WEATHER_KEY}`
         const { data } = await axios.get(url)
 
         const updateCity = {
