@@ -11,6 +11,13 @@
   border: none;
   cursor: pointer;
 
+  &:active {
+    box-shadow: inset 0px -2px 8px rgba(0, 0, 0, 0.4),
+      0px 4px 5px rgba(0, 0, 0, 0.14),
+      0px 1px 10px rgba(0, 0, 0, 0.12),
+      0px 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
   &::after {
     position: absolute;
     top: 50%;
@@ -44,6 +51,12 @@
   bottom: 0;
   left: 0;
   background: rgba(11, 11, 11, 0.5);
+  animation: 0.5s 1 openBack;
+
+  @keyframes openBack {
+    from { opacity: 0 }
+    to   { opacity: 1 }
+  }
 }
 .modal {
   padding: 24px;
@@ -56,6 +69,12 @@
   background: #FFFFFF;
   box-shadow: 0px 16px 24px rgb(0 0 0 / 14%), 0px 6px 30px rgb(0 0 0 / 12%), 0px 8px 10px rgb(0 0 0 / 20%);
   border-radius: 4px;
+  animation: 0.5s 1 open;
+
+  @keyframes open {
+    from { transform: translate(-50%, -50%) scale(0) }
+    to   { transform: translate(-50%, -50%) scale(1) }
+  }
 
   @media screen and (min-width: 360px) and (max-width: 810px) {
     width: calc(100vw / (360 / 340));
@@ -91,6 +110,7 @@
     border: none;
     outline: none;
     border-bottom: 1px solid #1B1B1B;
+    border-radius: 0px;
     @include font-style(400, 24px, 24px);
     color: $color-primary;
 
@@ -143,8 +163,13 @@
       cursor: default;
 
       &_active {
-          color: $color-buttons;
-          cursor: pointer;
+        color: $color-buttons;
+        cursor: pointer;
+        transition: 0.1s;
+
+        &:active {
+          transform: scale(0.95);
+        }
       }
     }
   }

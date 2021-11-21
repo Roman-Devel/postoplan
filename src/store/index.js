@@ -32,7 +32,7 @@ export default createStore({
         commit('addExtra', Object.keys(data).map(key => ({ ...data[key], dbId: key })))
       } catch (e) {}
     },
-    async addCity (_, { search }) {
+    async addCity ({ commit }, { search }) {
       try {
         const url = `https://api.openweathermap.org/data/2.5/weather?units=metric&lang=en&q=${search}&appid=${process.env.VUE_APP_WEATHER_KEY}`
         const { data: dataGet } = await axios.get(url)
@@ -47,6 +47,7 @@ export default createStore({
         }
 
         const { data } = await axios.post(process.env.VUE_APP_DB_URL + 'cities.json', newCity)
+        commit('addExtra', [{ ...newCity, dbId: data.name }])
 
         return { ...newCity, dbId: data.name }
       } catch (e) {

@@ -43,7 +43,7 @@ export default {
 
     const addNewCity = city => dataExtra.value.push(city)
 
-    onMounted(async () => {
+    onMounted(() => {
       try {
         setTimeout(async () => {
           await store.dispatch('load')

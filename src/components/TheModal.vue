@@ -14,8 +14,7 @@
         @blur="sBlur"
         @keypress.enter="onSubmit"
       />
-      <small v-if="sError">{{ sError }}</small>
-      <small v-if="myError">{{ myError }}</small>
+      <small v-if="sError || myError">{{ sError || myError }}</small>
 
       <div class="control">
         <div class="control__left">
@@ -62,9 +61,13 @@ export default {
       isActive.value = false
       resetForm()
     }
-
     const onSubmit = handleSubmit(async value => {
+      const checking = store.getters.extraWeather.filter(key => key.city === value.search)
+
       try {
+        if (checking.length) {
+          throw new Error('This city already exists')
+        }
         const newCity = await store.dispatch('addCity', value)
         emit('added', newCity)
         cancel()
